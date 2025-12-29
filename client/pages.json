@@ -1,0 +1,120 @@
+{
+	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+		{
+			"path": "pages/index/index",
+			"style": {
+				"navigationBarTitleText": "首页"
+			}
+		},
+		{
+			"path": "pages/login/login",
+			"style": {
+				"navigationBarTitleText": "登录",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/farmland/list",
+			"style": {
+				"navigationBarTitleText": "地块管理"
+			}
+		},
+		{
+			"path": "pages/farmland/add",
+			"style": {
+				"navigationBarTitleText": "新增地块"
+			}
+		},
+		{
+			"path": "pages/batch/list",
+			"style": {
+				"navigationBarTitleText": "生产批次管理"
+			}
+		},
+		{
+			"path": "pages/batch/add",
+			"style": {
+				"navigationBarTitleText": "新建批次"
+			}
+		},
+		{
+			"path": "pages/operation/add",
+			"style": {
+				"navigationBarTitleText": "添加农事记录"
+			}
+		},
+		{
+			"path": "pages/operation/list",
+			"style": {
+				"navigationBarTitleText": "农事记录列表"
+			}
+		},
+		{
+			"path": "pages/operation/all",
+			"style": {
+				"navigationBarTitleText": "最新农事一览"
+			}
+		},
+		{
+			"path": "pages/harvest/add",
+			"style": {
+				"navigationBarTitleText": "采摘登记"
+			}
+		},
+		{
+			"path": "pages/harvest/list",
+			"style": {
+				"navigationBarTitleText": "待采摘列表"
+			}
+		},
+		{
+			"path": "pages/trace/code",
+			"style": {
+				"navigationBarTitleText": "溯源码生成"
+			}
+		},
+		{
+			"path": "pages/trace/result",
+			"style": {
+				"navigationBarTitleText": "产品溯源档案"
+			}
+		},
+		{
+			"path": "pages/transport/list",
+			"style": {
+				"navigationBarTitleText": "物流运输管理"
+			}
+		},
+		{
+			"path": "pages/transport/create",
+			"style": {
+				"navigationBarTitleText": "新建运输单"
+			}
+		},
+		{
+			"path": "pages/admin/stats",
+			"style": {
+				"navigationBarTitleText": "数据统计看板"
+			}
+		},
+		{
+			"path": "pages/warehouse/stock",
+			"style": {
+				"navigationBarTitleText": "库存管理"
+			}
+		},
+		{
+			"path": "pages/warehouse/operate",
+			"style": {
+				"navigationBarTitleText": "出入库操作"
+			}
+		}
+	],
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "uni-app",
+		"navigationBarBackgroundColor": "#F8F8F8",
+		"backgroundColor": "#F8F8F8"
+	},
+	"uniIdRouter": {}
+}
