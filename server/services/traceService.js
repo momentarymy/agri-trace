@@ -29,14 +29,12 @@ class TraceService {
 
     // 3. Get Harvest Info
     const harvest = await Harvest.findOne({
-      where: { batch_id: batchId },
-      include: [{ model: User, as: 'operator', attributes: ['username', 'real_name'] }]
+      where: { batch_id: batchId }
     });
 
     // 4. Get Transport Info
     const transport = await Transport.findOne({
-      where: { batch_id: batchId },
-      include: [{ model: User, as: 'driver', attributes: ['username', 'real_name'] }]
+      where: { batch_id: batchId }
     });
 
     // 5. Get Quality Checks
@@ -62,15 +60,15 @@ class TraceService {
         date: op.operate_time,
         type: op.type,
         desc: op.description,
-        images: op.images ? op.images.split(',') : [],
-        operator: op.operator ? (op.operator.real_name || op.operator.username) : 'Unknown'
+        images: op.images || [],
+        operator: op.operator || 'Unknown'
       })),
       harvest: harvest ? {
         time: harvest.harvest_time,
         quantity: harvest.quantity,
-        grade: harvest.quality_grade || harvest.grade,
-        images: harvest.images ? harvest.images.split(',') : [],
-        operator: harvest.operator ? (harvest.operator.real_name || harvest.operator.username) : 'Unknown'
+        grade: harvest.grade,
+        images: harvest.images || [],
+        operator: harvest.operator || 'Unknown'
       } : null,
       quality: qualityChecks.map(qc => ({
         date: qc.check_date,
@@ -83,9 +81,9 @@ class TraceService {
         start_time: transport.start_time,
         end_time: transport.end_time,
         vehicle: transport.vehicle_no,
-        origin: transport.origin,
+        origin: transport.origin || '',
         destination: transport.destination,
-        driver: transport.driver ? (transport.driver.real_name || transport.driver.username) : 'Unknown',
+        driver: transport.driver_name || 'Unknown',
         temp_logs: transport.temperature_logs || []
       } : null
     };
