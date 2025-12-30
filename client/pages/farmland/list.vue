@@ -35,7 +35,7 @@
 </template>
 
 <script>
-	import { request } from '@/utils/request.js';
+	import { getFarmlandList, deleteFarmland } from '@/api/farmland.js';
 	
 	export default {
 		data() {
@@ -49,9 +49,7 @@
 		methods: {
 			async getList() {
 				try {
-					const res = await request({
-						url: '/farmlands'
-					});
+					const res = await getFarmlandList();
 					this.list = res;
 				} catch (e) {
 					console.error(e);
@@ -69,10 +67,7 @@
 					success: async (res) => {
 						if (res.confirm) {
 							try {
-								await request({
-									url: `/farmlands/${id}`,
-									method: 'DELETE'
-								});
+								await deleteFarmland(id);
 								uni.showToast({ title: '删除成功' });
 								this.getList(); // 刷新列表
 							} catch (e) {

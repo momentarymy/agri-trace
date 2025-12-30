@@ -37,7 +37,7 @@
 </template>
 
 <script>
-	import { request } from '@/utils/request.js';
+	import { getOperationList } from '@/api/operation.js';
 	
 	export default {
 		data() {
@@ -59,9 +59,7 @@
 		methods: {
 			async getList() {
 				try {
-					const res = await request({
-						url: `/operations/batch/${this.batchId}`
-					});
+					const res = await getOperationList(this.batchId);
 					this.list = res;
 				} catch (e) {
 					console.error(e);

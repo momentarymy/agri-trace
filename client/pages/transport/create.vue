@@ -34,7 +34,8 @@
 </template>
 
 <script>
-	import { request } from '@/utils/request.js';
+	import { createTransport } from '@/api/transport.js';
+	import { getBatchList } from '@/api/batch.js';
 	
 	export default {
 		data() {
@@ -56,7 +57,7 @@
 		methods: {
 			async getBatches() {
 				try {
-					const res = await request({ url: '/batches' });
+					const res = await getBatchList();
 					// 只能选择 "已采摘" (status=1) 的批次进行运输
 					this.batchList = res
 						.filter(item => item.status === 1)
@@ -76,11 +77,7 @@
 				if (!this.form.vehicle_no) return uni.showToast({ title: '请输入车牌号', icon: 'none' });
 				
 				try {
-					await request({
-						url: '/transports',
-						method: 'POST',
-						data: this.form
-					});
+					await createTransport(this.form);
 					
 					uni.showToast({ title: '调度成功' });
 					setTimeout(() => {

@@ -13,6 +13,7 @@ const statsRoutes = require('./routes/statsRoutes');
 const uploadRoutes = require('./routes/uploadRoutes');
 const warehouseRoutes = require('./routes/warehouseRoutes');
 const iotRoutes = require('./routes/iotRoutes');
+const qualityRoutes = require('./routes/qualityRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -37,13 +38,24 @@ app.use('/api/stats', statsRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/warehouse', warehouseRoutes);
 app.use('/api/iot', iotRoutes);
+app.use('/api/quality', qualityRoutes);
+
+// 全局错误处理
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
+  res.status(statusCode).json({ 
+    message: err.message || '服务器内部错误', 
+    error: process.env.NODE_ENV === 'development' ? err.stack : undefined 
+  });
+});
 
 // 启动服务
 const startServer = async () => {
   await connectDB();
   app.listen(PORT, () => {
     console.log(`
-  🚀 服务运行中...
+   服务运行中...
   --------------------------
   本地访问: http://localhost:${PORT}
   --------------------------

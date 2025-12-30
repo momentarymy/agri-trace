@@ -35,7 +35,7 @@
 </template>
 
 <script>
-	import { request } from '@/utils/request.js';
+	import { getBatchList } from '@/api/batch.js';
 	
 	export default {
 		data() {
@@ -49,7 +49,7 @@
 		methods: {
 			async getList() {
 				try {
-					const res = await request({ url: '/batches' });
+					const res = await getBatchList();
 					// 前端过滤：只显示状态为 0 (种植中) 的批次
 					this.list = res.filter(item => item.status === 0);
 				} catch (e) { console.error(e); }

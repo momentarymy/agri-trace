@@ -98,6 +98,18 @@
 			}
 		},
 		{
+			"path": "pages/quality/list",
+			"style": {
+				"navigationBarTitleText": "质量检测记录"
+			}
+		},
+		{
+			"path": "pages/quality/add",
+			"style": {
+				"navigationBarTitleText": "新增质检报告"
+			}
+		},
+		{
 			"path": "pages/warehouse/stock",
 			"style": {
 				"navigationBarTitleText": "库存管理"
@@ -113,6 +125,12 @@
 			"path": "pages/iot/monitor",
 			"style": {
 				"navigationBarTitleText": "环境监控中心"
+			}
+		},
+		{
+			"path": "pages/trace/scan",
+			"style": {
+				"navigationBarTitleText": "扫码溯源"
 			}
 		}
 	],

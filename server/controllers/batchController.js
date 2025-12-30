@@ -1,39 +1,24 @@
-const Batch = require('../models/Batch');
-const Farmland = require('../models/Farmland');
+const batchService = require('../services/batchService');
+const asyncHandler = require('../utils/asyncHandler');
 
-// 获取批次列表
-exports.getAll = async (req, res) => {
+exports.getAll = asyncHandler(async (req, res) => {
+  const list = await batchService.getAll();
+  res.json(list);
+});
+
+exports.create = asyncHandler(async (req, res) => {
+  const batch = await batchService.create(req.body);
+  res.status(201).json({ message: '创建成功', data: batch });
+});
+
+exports.getById = asyncHandler(async (req, res) => {
   try {
-    // 实际项目中应根据用户权限筛选
-    const list = await Batch.findAll({
-      include: [{ model: Farmland, as: 'farmland', attributes: ['name'] }],
-      order: [['created_at', 'DESC']]
-    });
-    res.json(list);
+    const batch = await batchService.getById(req.params.id);
+    res.json(batch);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: '服务器错误' });
+    if (error.message === 'Batch not found') {
+      return res.status(404).json({ message: '批次不存在' });
+    }
+    throw error;
   }
-};
-
-// 创建批次
-exports.create = async (req, res) => {
-  try {
-    const { crop_name, farmland_id, planting_date } = req.body;
-    
-    // 自动生成批次号: B + 时间戳 + 随机数
-    const batch_no = 'B' + Date.now() + Math.floor(Math.random() * 1000);
-
-    const newBatch = await Batch.create({
-      batch_no,
-      crop_name,
-      farmland_id,
-      planting_date
-    });
-
-    res.status(201).json({ message: '创建成功', data: newBatch });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: '服务器错误' });
-  }
-};
+});

@@ -62,6 +62,8 @@
 </template>
 
 <script>
+import { getRealTimeData, getHistoryData } from '@/api/iot.js';
+
 export default {
   data() {
     return {
@@ -84,31 +86,17 @@ export default {
       this.getHistory();
     },
     async getRealTime() {
-      const token = uni.getStorageSync('token');
       try {
-        const res = await uni.request({
-          url: 'http://localhost:3000/api/iot/realtime',
-          method: 'GET',
-          header: { 'Authorization': `Bearer ${token}` }
-        });
-        if (res.statusCode === 200) {
-          this.realTime = res.data;
-        }
+        const res = await getRealTimeData();
+        this.realTime = res;
       } catch (e) {
         console.error(e);
       }
     },
     async getHistory() {
-      const token = uni.getStorageSync('token');
       try {
-        const res = await uni.request({
-          url: 'http://localhost:3000/api/iot/history',
-          method: 'GET',
-          header: { 'Authorization': `Bearer ${token}` }
-        });
-        if (res.statusCode === 200) {
-          this.history = res.data;
-        }
+        const res = await getHistoryData();
+        this.history = res;
       } catch (e) {
         console.error(e);
       }

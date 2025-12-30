@@ -26,7 +26,7 @@
 </template>
 
 <script>
-	import { request } from '@/utils/request.js';
+	import { login } from '@/api/auth.js';
 	
 	export default {
 		data() {
@@ -42,13 +42,9 @@
 				}
 				
 				try {
-					const res = await request({
-						url: '/auth/login',
-						method: 'POST',
-						data: {
-							username: this.username,
-							password: this.password
-						}
+					const res = await login({
+						username: this.username,
+						password: this.password
 					});
 					
 					// 登录成功

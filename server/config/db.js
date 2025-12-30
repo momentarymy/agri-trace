@@ -1,31 +1,36 @@
 const { Sequelize } = require('sequelize');
 
-// 数据库配置
-// 注意：请根据你的本地 MySQL 设置修改 password
-const sequelize = new Sequelize('agri_trace', 'root', '123456', {
-  host: 'localhost',
-  dialect: 'mysql',
-  timezone: '+08:00', // 东八区时间
-  logging: false,     // 关闭控制台 SQL 语句输出
-  pool: {
-    max: 5,
-    min: 0,
-    acquire: 30000,
-    idle: 10000
+const sequelize = new Sequelize(
+  process.env.DB_NAME || 'agri_trace',
+  process.env.DB_USER || 'root',
+  process.env.DB_PASS || '123456',
+  {
+    host: process.env.DB_HOST || 'localhost',
+    dialect: 'mysql',
+    timezone: '+08:00',
+    logging: process.env.NODE_ENV === 'development' ? console.log : false,
+    pool: {
+      max: 5,
+      min: 0,
+      acquire: 30000,
+      idle: 10000
+    }
   }
-});
+);
 
-// 测试连接函数
 const connectDB = async () => {
   try {
     await sequelize.authenticate();
-    console.log('✅ 数据库连接成功 (MySQL Connected)');
+    console.log('数据库连接成功');
     
-    // 自动同步表结构
-    await sequelize.sync({ alter: true });
-    console.log('✅ 数据表同步完成');
+   
+    if (process.env.NODE_ENV !== 'production') {
+      await sequelize.sync({ alter: true });
+      console.log('数据表同步完成');
+    }
   } catch (error) {
-    console.error('❌ 数据库连接失败:', error);
+    console.error('Database connection error:', error);
+    process.exit(1);
   }
 };
 

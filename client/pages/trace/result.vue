@@ -41,7 +41,7 @@
 				</view>
 				
 				<!-- 3. 采摘上市 -->
-				<view class="timeline-item end" v-if="info.harvest">
+				<view class="timeline-item" v-if="info.harvest">
 					<view class="dot orange"></view>
 					<view class="content">
 						<view class="time">{{ formatDate(info.harvest.time) }}</view>
@@ -55,6 +55,44 @@
 						</view>
 					</view>
 				</view>
+
+				<!-- 3.5 质量检测 (新增) -->
+				<view class="timeline-item" v-for="(qc, index) in info.quality" :key="'qc-'+index">
+					<view class="dot red"></view>
+					<view class="content">
+						<view class="time">{{ formatDate(qc.date) }}</view>
+						<view class="title">质量检测: {{ qc.item }}</view>
+						<view class="desc">
+							<view>结果：<text :style="{color: qc.result.includes('合格') ? '#4cd964' : '#dd524d', fontWeight: 'bold'}">{{ qc.result }}</text></view>
+							<view>检测人：{{ qc.inspector }}</view>
+							<view v-if="qc.remarks">备注：{{ qc.remarks }}</view>
+						</view>
+					</view>
+				</view>
+
+				<!-- 4. 物流运输 -->
+				<view class="timeline-item end" v-if="info.transport">
+					<view class="dot purple"></view>
+					<view class="content">
+						<view class="time">{{ formatDate(info.transport.start_time) }}</view>
+						<view class="title">冷链运输</view>
+						<view class="desc">
+							<view>车辆：{{ info.transport.vehicle }}</view>
+							<view>司机：{{ info.transport.driver }}</view>
+							<view>路线：{{ info.transport.origin }} -> {{ info.transport.destination }}</view>
+						</view>
+						<!-- 温度监控图表/数据 -->
+						<view class="temp-chart" v-if="info.transport.temp_logs && info.transport.temp_logs.length">
+							<view class="chart-title">冷链温度监控</view>
+							<view class="temp-list">
+								<view class="temp-item" v-for="(log, idx) in info.transport.temp_logs" :key="idx">
+									<text class="time">{{ formatDate(log.time).split(' ')[1] }}</text>
+									<text class="temp">{{ log.temp }}℃</text>
+								</view>
+							</view>
+						</view>
+					</view>
+				</view>
 			</view>
 		</view>
 		
@@ -65,7 +103,7 @@
 </template>
 
 <script>
-	import { request } from '@/utils/request.js';
+	import { getTraceInfo } from '@/api/trace.js';
 	
 	export default {
 		data() {
@@ -77,30 +115,18 @@
 		onLoad(options) {
 			if (options.id) {
 				this.id = options.id;
-				this.getTraceInfo();
+				this.fetchTraceInfo();
 			} else {
 				uni.showToast({ title: '无效的溯源码', icon: 'none' });
 			}
 		},
 		methods: {
-			async getTraceInfo() {
+			async fetchTraceInfo() {
 				try {
-					// 注意：这里不需要 token，因为是公开接口
-					// 但我们的 request 封装默认会带 token，没关系，后端不校验即可
-					// 或者我们需要修改 request.js 支持 skipAuth
-					// 这里暂时直接请求
-					uni.request({
-						url: `http://localhost:3000/api/trace/${this.id}`,
-						success: (res) => {
-							if (res.statusCode === 200) {
-								this.info = res.data;
-							} else {
-								uni.showToast({ title: '获取信息失败', icon: 'none' });
-							}
-						}
-					});
+					const res = await getTraceInfo(this.id);
+					this.info = res;
 				} catch (e) {
-					console.error(e);
+					uni.showToast({ title: '获取信息失败', icon: 'none' });
 				}
 			},
 			formatDate(dateStr) {
@@ -142,6 +168,8 @@
 				&.green { background: #4cd964; }
 				&.blue { background: #007aff; }
 				&.orange { background: #f0ad4e; }
+				&.purple { background: #9c27b0; }
+				&.red { background: #dd524d; }
 			}
 			.content {
 				background: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
@@ -153,6 +181,16 @@
 					image { width: 60px; height: 60px; border-radius: 4px; }
 				}
 				.operator { margin-top: 8px; font-size: 12px; color: #ccc; text-align: right; }
+				
+				.temp-chart {
+					margin-top: 15px; background: #f9f9f9; padding: 10px; border-radius: 4px;
+					.chart-title { font-size: 12px; font-weight: bold; color: #333; margin-bottom: 5px; }
+					.temp-list { display: flex; flex-wrap: wrap; gap: 10px; }
+					.temp-item { 
+						background: #fff; padding: 2px 6px; border-radius: 4px; border: 1px solid #eee; font-size: 12px;
+						.temp { color: #007aff; margin-left: 5px; font-weight: bold; }
+					}
+				}
 			}
 		}
 	}

@@ -25,7 +25,8 @@
 </template>
 
 <script>
-	import { request } from '@/utils/request.js';
+	import { createBatch } from '@/api/batch.js';
+	import { getFarmlandList } from '@/api/farmland.js';
 	
 	export default {
 		data() {
@@ -40,7 +41,7 @@
 		},
 		methods: {
 			async getFarmlands() {
-				const res = await request({ url: '/farmlands' });
+				const res = await getFarmlandList();
 				this.farmlands = res;
 			},
 			bindPickerChange(e) {
@@ -52,7 +53,7 @@
 			},
 			async handleSubmit() {
 				if(!this.form.crop_name || !this.form.farmland_id) return uni.showToast({title:'请填写完整', icon:'none'});
-				await request({ url: '/batches', method: 'POST', data: this.form });
+				await createBatch(this.form);
 				uni.showToast({ title: '创建成功' });
 				setTimeout(() => uni.navigateBack(), 1000);
 			}

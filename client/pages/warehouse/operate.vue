@@ -28,6 +28,9 @@
 </template>
 
 <script>
+import { getBatchList } from '@/api/batch.js';
+import { operateStock } from '@/api/warehouse.js';
+
 export default {
   data() {
     return {
@@ -47,19 +50,12 @@ export default {
   },
   methods: {
     async fetchBatches() {
-      const token = uni.getStorageSync('token');
       try {
-        const res = await uni.request({
-          url: 'http://localhost:3000/api/batches',
-          method: 'GET',
-          header: { 'Authorization': `Bearer ${token}` }
-        });
-        if (res.statusCode === 200) {
-          this.batches = res.data.map(b => ({
-            ...b,
-            display_name: `${b.crop_name} (${b.batch_no})`
-          }));
-        }
+        const res = await getBatchList();
+        this.batches = res.map(b => ({
+          ...b,
+          display_name: `${b.crop_name} (${b.batch_no})`
+        }));
       } catch (e) {
         console.error(e);
       }
@@ -75,30 +71,20 @@ export default {
         return uni.showToast({ title: '请输入数量', icon: 'none' });
       }
 
-      const token = uni.getStorageSync('token');
       try {
-        const res = await uni.request({
-          url: 'http://localhost:3000/api/warehouse/operate',
-          method: 'POST',
-          header: { 'Authorization': `Bearer ${token}` },
-          data: {
-            batch_id: this.batches[this.batchIndex].id,
-            type: this.type,
-            quantity: this.quantity,
-            remark: this.remark
-          }
+        await operateStock({
+          batch_id: this.batches[this.batchIndex].id,
+          type: this.type,
+          quantity: this.quantity,
+          remark: this.remark
         });
 
-        if (res.statusCode === 200) {
-          uni.showToast({ title: '操作成功' });
-          setTimeout(() => {
-            uni.navigateBack();
-          }, 1500);
-        } else {
-          uni.showToast({ title: res.data.message || '操作失败', icon: 'none' });
-        }
+        uni.showToast({ title: '操作成功' });
+        setTimeout(() => {
+          uni.navigateBack();
+        }, 1500);
       } catch (e) {
-        uni.showToast({ title: '请求错误', icon: 'none' });
+        console.error(e);
       }
     }
   }

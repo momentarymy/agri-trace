@@ -73,6 +73,8 @@
 </template>
 
 <script>
+import { getStockList, getStockLogs } from '@/api/warehouse.js';
+
 export default {
   data() {
     return {
@@ -91,26 +93,11 @@ export default {
   },
   methods: {
     async fetchData() {
-      const token = uni.getStorageSync('token');
-      if (!token) return;
-
-      const url = this.currentTab === 0 
-        ? 'http://localhost:3000/api/warehouse/stocks'
-        : 'http://localhost:3000/api/warehouse/logs';
-
       try {
-        const res = await uni.request({
-          url,
-          method: 'GET',
-          header: { 'Authorization': `Bearer ${token}` }
-        });
-        
-        if (res.statusCode === 200) {
-          if (this.currentTab === 0) {
-            this.stocks = res.data;
-          } else {
-            this.logs = res.data;
-          }
+        if (this.currentTab === 0) {
+          this.stocks = await getStockList();
+        } else {
+          this.logs = await getStockLogs();
         }
       } catch (e) {
         console.error(e);

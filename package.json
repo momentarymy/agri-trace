@@ -1,4 +1,8 @@
 {
+  "scripts": {
+    "dev": "cd server && npm run dev",
+    "start": "cd server && npm start"
+  },
   "dependencies": {
     "bcryptjs": "^3.0.3"
   }

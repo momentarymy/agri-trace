@@ -43,6 +43,8 @@
 </template>
 
 <script>
+import { getDashboardStats } from '@/api/stats.js';
+
 export default {
   data() {
     return {
@@ -68,25 +70,8 @@ export default {
     },
     async fetchStats() {
       try {
-        const token = uni.getStorageSync('token');
-        if (!token) {
-          uni.redirectTo({ url: '/pages/login/login' });
-          return;
-        }
-        
-        const res = await uni.request({
-          url: 'http://localhost:3000/api/stats/dashboard',
-          method: 'GET',
-          header: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        
-        if (res.statusCode === 200) {
-          this.stats = res.data;
-        } else {
-          console.error('获取统计失败', res);
-        }
+        const res = await getDashboardStats();
+        this.stats = res;
       } catch (e) {
         console.error('请求错误', e);
         uni.showToast({ title: '加载失败', icon: 'none' });

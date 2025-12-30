@@ -1,63 +1,78 @@
 <template>
 	<view class="container">
-		<view class="card">
-			<view class="title">溯源码生成成功</view>
+		<view class="qr-card">
+			<view class="title">产品溯源二维码</view>
+			<view class="subtitle">扫描下方二维码查看全链路溯源信息</view>
+			
 			<view class="qr-box">
-				<image class="qr-img" :src="qrUrl" mode="widthFix"></image>
+				<image class="qr-img" :src="qrUrl" mode="widthFix" v-if="qrUrl"></image>
+				<view class="loading" v-else>生成中...</view>
 			</view>
-			<view class="tip">请将此二维码打印并粘贴在产品包装上</view>
-			<view class="batch-info">
-				<text>批次号：{{ batchNo }}</text>
+			
+			<view class="info-box" v-if="batchInfo">
+				<view class="row">
+					<text class="label">作物名称:</text>
+					<text class="value">{{ batchInfo.crop_name }}</text>
+				</view>
+				<view class="row">
+					<text class="label">批次编号:</text>
+					<text class="value">{{ batchInfo.batch_no }}</text>
+				</view>
+				<view class="row">
+					<text class="label">生成时间:</text>
+					<text class="value">{{ new Date().toLocaleDateString() }}</text>
+				</view>
 			</view>
+			
+			<button class="btn-save" @click="saveImage">保存二维码</button>
 		</view>
-		
-		<button class="btn-save" @click="saveImage">保存二维码</button>
 	</view>
 </template>
 
 <script>
+	import { getBatchDetail } from '@/api/batch.js';
+	
 	export default {
 		data() {
 			return {
-				batchId: '',
-				batchNo: '',
+				batchId: null,
+				batchInfo: null,
 				qrUrl: ''
 			}
 		},
 		onLoad(options) {
 			if (options.batchId) {
 				this.batchId = options.batchId;
-				this.batchNo = options.batchNo || '未知批次';
-				this.generateQR();
+				this.loadData();
 			}
 		},
 		methods: {
+			async loadData() {
+				try {
+					const res = await getBatchDetail(this.batchId);
+					this.batchInfo = res;
+					this.generateQR();
+				} catch (e) {
+					uni.showToast({ title: '加载失败', icon: 'none' });
+				}
+			},
 			generateQR() {
-				// 溯源结果页的地址 (假设部署在本地或某IP)
-				// 实际生产环境应替换为真实域名
-				// 这里为了演示，指向前端的 trace/result 页面
-				// 注意：真机扫码需要局域网IP或公网域名，localhost 手机扫不到
-				// 我们这里生成一个指向 "http://192.168.x.x:8080/#/pages/trace/result?id=..." 的码
-				
-				// 为了演示方便，我们先用一个模拟地址
-				const content = `http://192.168.1.5:8080/#/pages/trace/result?id=${this.batchId}`;
+				// 实际场景中，这里应该是 H5 应用的线上地址
+				// 本地开发演示使用 localhost
+				// 格式: http://your-domain.com/#/pages/trace/result?id=BATCH_ID
+				const baseUrl = 'http://192.168.1.5:8080'; // 请替换为你电脑的局域网IP，以便手机扫码
+				const traceUrl = `${baseUrl}/#/pages/trace/result?id=${this.batchId}`;
 				
 				// 使用第三方 API 生成二维码图片
-				this.qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(content)}`;
+				this.qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(traceUrl)}`;
 			},
 			saveImage() {
+				// H5 环境下提示长按保存
 				// #ifdef H5
-				// H5 环境下，直接提示用户长按保存
-				uni.showModal({
-					title: '提示',
-					content: '请长按图片或点击右键选择"图片另存为"来保存二维码',
-					showCancel: false
-				});
-				return;
+				uni.showToast({ title: '请长按图片保存', icon: 'none' });
 				// #endif
-
+				
 				// #ifndef H5
-				// App 或小程序环境下，调用原生保存接口
 				uni.downloadFile({
 					url: this.qrUrl,
 					success: (res) => {
@@ -67,12 +82,9 @@
 								uni.showToast({ title: '保存成功' });
 							},
 							fail: () => {
-								uni.showToast({ title: '保存失败，请检查权限', icon: 'none' });
+								uni.showToast({ title: '保存失败', icon: 'none' });
 							}
 						});
-					},
-					fail: () => {
-						uni.showToast({ title: '下载图片失败', icon: 'none' });
 					}
 				});
 				// #endif
@@ -82,16 +94,85 @@
 </script>
 
 <style lang="scss">
-	.container { padding: 30px; background: #333; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-	.card {
-		background: #fff; width: 80%; padding: 30px 20px; border-radius: 12px; text-align: center;
-		.title { font-size: 20px; font-weight: bold; margin-bottom: 20px; color: #333; }
-		.qr-box { margin: 20px 0; }
-		.qr-img { width: 200px; height: 200px; }
-		.tip { font-size: 12px; color: #999; margin-bottom: 10px; }
-		.batch-info { font-size: 14px; color: #666; background: #f5f5f5; padding: 5px; border-radius: 4px; display: inline-block; }
+	.container {
+		padding: 40px 20px;
+		background-color: #2979ff;
+		min-height: 100vh;
+		display: flex;
+		justify-content: center;
+		align-items: center;
 	}
-	.btn-save {
-		margin-top: 30px; width: 80%; background: #4cd964; color: #fff; border-radius: 25px;
+	
+	.qr-card {
+		background: #fff;
+		width: 100%;
+		border-radius: 16px;
+		padding: 40px 20px;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+		
+		.title {
+			font-size: 24px;
+			font-weight: bold;
+			color: #333;
+			margin-bottom: 10px;
+		}
+		
+		.subtitle {
+			font-size: 14px;
+			color: #999;
+			margin-bottom: 30px;
+		}
+		
+		.qr-box {
+			width: 240px;
+			height: 240px;
+			margin-bottom: 30px;
+			
+			.qr-img {
+				width: 100%;
+				height: 100%;
+			}
+			
+			.loading {
+				width: 100%;
+				height: 100%;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				background: #f0f0f0;
+				color: #999;
+			}
+		}
+		
+		.info-box {
+			width: 100%;
+			padding: 20px;
+			background: #f9f9f9;
+			border-radius: 8px;
+			margin-bottom: 30px;
+			
+			.row {
+				display: flex;
+				justify-content: space-between;
+				margin-bottom: 10px;
+				font-size: 14px;
+				
+				&:last-child { margin-bottom: 0; }
+				
+				.label { color: #666; }
+				.value { font-weight: bold; color: #333; }
+			}
+		}
+		
+		.btn-save {
+			width: 80%;
+			background: #2979ff;
+			color: #fff;
+			border-radius: 25px;
+			font-size: 16px;
+		}
 	}
 </style>

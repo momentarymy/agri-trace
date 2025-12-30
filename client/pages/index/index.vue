@@ -46,7 +46,8 @@
 						{ label: '地块管理', icon: '🌱', color: '#4cd964', path: '/pages/farmland/list' },
 						{ label: '农事记录', icon: '🚜', color: '#007aff', path: '/pages/operation/all' },
 						{ label: '采摘登记', icon: '🧺', color: '#f0ad4e', path: '/pages/harvest/list' },
-						{ label: '批次管理', icon: '🏷️', color: '#dd524d', path: '/pages/batch/list' }
+						{ label: '批次管理', icon: '🏷️', color: '#dd524d', path: '/pages/batch/list' },
+						{ label: '质量检测', icon: '✅', color: '#9c27b0', path: '/pages/quality/list' }
 					],
 					// 流通端功能
 					logistics: [

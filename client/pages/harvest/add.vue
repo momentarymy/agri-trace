@@ -36,7 +36,7 @@
 </template>
 
 <script>
-	import { request } from '@/utils/request.js';
+	import { createHarvest } from '@/api/harvest.js';
 	
 	export default {
 		data() {
@@ -99,13 +99,9 @@
 				if (!this.form.quantity) return uni.showToast({ title: '请填写数量', icon: 'none' });
 				
 				try {
-					await request({
-						url: '/harvests',
-						method: 'POST',
-						data: {
-							batch_id: this.batchId,
-							...this.form
-						}
+					await createHarvest({
+						batch_id: this.batchId,
+						...this.form
 					});
 					
 					uni.showToast({ title: '登记成功' });

@@ -31,7 +31,7 @@
 </template>
 
 <script>
-	import { request } from '@/utils/request.js';
+	import { createOperation } from '@/api/operation.js';
 	
 	export default {
 		data() {
@@ -97,13 +97,9 @@
 				// 确保 batchId 存在
 				if (!this.batchId) return uni.showToast({ title: '批次ID丢失', icon: 'none' });
 
-				await request({
-					url: '/operations',
-					method: 'POST',
-					data: {
-						batch_id: parseInt(this.batchId), // 确保转为数字
-						...this.form
-					}
+				await createOperation({
+					batch_id: parseInt(this.batchId), // 确保转为数字
+					...this.form
 				});
 				
 				uni.showToast({ title: '记录成功' });

@@ -25,7 +25,7 @@
 </template>
 
 <script>
-	import { request } from '@/utils/request.js';
+	import { createFarmland } from '@/api/farmland.js';
 	
 	export default {
 		data() {
@@ -55,11 +55,7 @@
 				}
 				
 				try {
-					await request({
-						url: '/farmlands',
-						method: 'POST',
-						data: this.form
-					});
+					await createFarmland(this.form);
 					
 					uni.showToast({ title: '创建成功' });
 					setTimeout(() => {
