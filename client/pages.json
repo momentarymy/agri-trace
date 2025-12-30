@@ -108,6 +108,12 @@
 			"style": {
 				"navigationBarTitleText": "出入库操作"
 			}
+		},
+		{
+			"path": "pages/iot/monitor",
+			"style": {
+				"navigationBarTitleText": "环境监控中心"
+			}
 		}
 	],
 	"globalStyle": {

@@ -12,6 +12,7 @@ const transportRoutes = require('./routes/transportRoutes');
 const statsRoutes = require('./routes/statsRoutes');
 const uploadRoutes = require('./routes/uploadRoutes');
 const warehouseRoutes = require('./routes/warehouseRoutes');
+const iotRoutes = require('./routes/iotRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -35,6 +36,7 @@ app.use('/api/transports', transportRoutes);
 app.use('/api/stats', statsRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/warehouse', warehouseRoutes);
+app.use('/api/iot', iotRoutes);
 
 // 启动服务
 const startServer = async () => {
