@@ -27,20 +27,30 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // 静态资源托管 (用于访问上传的图片)
 app.use('/uploads', express.static('uploads'));
 
-// 路由配置
+// 路由配置 (Route Configuration)
+
+// 1. 认证与系统管理 (Authentication & System)
 app.use('/api/auth', authRoutes);
-app.use('/api/farmlands', farmlandRoutes);
-app.use('/api/batches', batchRoutes);
-app.use('/api/operations', operationRoutes);
-app.use('/api/harvests', harvestRoutes);
-app.use('/api/trace', traceRoutes);
-app.use('/api/transports', transportRoutes);
-app.use('/api/stats', statsRoutes);
-app.use('/api/upload', uploadRoutes);
-app.use('/api/warehouse', warehouseRoutes);
-app.use('/api/iot', iotRoutes);
-app.use('/api/quality', qualityRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/upload', uploadRoutes); // 文件上传
+
+// 2. 生产管理 (Production Management)
+app.use('/api/farmlands', farmlandRoutes); // 地块
+app.use('/api/batches', batchRoutes);      // 批次
+app.use('/api/operations', operationRoutes); // 农事操作
+app.use('/api/harvests', harvestRoutes);   // 采摘
+
+// 3. 仓储与物流 (Warehouse & Logistics)
+app.use('/api/warehouse', warehouseRoutes); // 仓储
+app.use('/api/transports', transportRoutes); // 物流运输
+
+// 4. 质量与物联网 (Quality & IoT)
+app.use('/api/quality', qualityRoutes);    // 质检
+app.use('/api/iot', iotRoutes);            // 传感器数据
+
+// 5. 溯源与统计 (Traceability & Statistics)
+app.use('/api/trace', traceRoutes);        // 溯源查询
+app.use('/api/stats', statsRoutes);        // 数据统计
 
 // 全局错误处理
 app.use((err, req, res, next) => {

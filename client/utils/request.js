@@ -1,65 +1,91 @@
-// 封装网络请求
-// 注意：手机扫码调试时，必须将 localhost 换成电脑的局域网 IP 地址
-// 并且手机和电脑必须连接同一个 Wi-Fi
-// 默认 IP (当未设置自定义 IP 时使用)
-const DEFAULT_IP = '10.139.199.91';
+/**
+ * Network Request Wrapper
+ * Encapsulates uni.request with automatic base URL handling, token injection, and error handling.
+ */
 
+// Default Cloud Server Address
+const DEFAULT_CLOUD_SERVER = 'https://dqyrnlrtwfxe.sealoshzh.site';
+
+/**
+ * Make a network request
+ * @param {Object} options - Request options
+ * @param {string} options.url - API endpoint (e.g., '/auth/login')
+ * @param {string} [options.method='GET'] - HTTP method
+ * @param {Object} [options.data] - Request body or query parameters
+ * @param {Object} [options.header] - Custom headers
+ * @returns {Promise<any>} Response data
+ */
 export const request = (options) => {
 	return new Promise((resolve, reject) => {
-		// 优先从本地存储获取自定义 IP
-		const customIp = uni.getStorageSync('server_ip');
-		const ip = customIp || DEFAULT_IP;
-		const baseUrl = `http://${ip}:3000/api`;
-
-		// 获取本地存储的 Token
-		const token = uni.getStorageSync('token');
+		// 1. Determine Base URL
+		// Retrieve custom server address from local storage (if set for debugging)
+		const storedServerAddress = uni.getStorageSync('server_ip');
+		const targetServer = storedServerAddress || DEFAULT_CLOUD_SERVER;
 		
+		let apiBaseUrl;
+		// Check if it's a full URL (Cloud/Remote) or just an IP (Local)
+		if (targetServer.startsWith('http://') || targetServer.startsWith('https://')) {
+			// Remove trailing slash if present
+			const cleanUrl = targetServer.endsWith('/') ? targetServer.slice(0, -1) : targetServer;
+			apiBaseUrl = `${cleanUrl}/api`;
+		} else {
+			// Assume it's a local IP address, append port 3000
+			apiBaseUrl = `http://${targetServer}:3000/api`;
+		}
+
+		// 2. Get Authentication Token
+		const authToken = uni.getStorageSync('token');
+		
+		// 3. Execute Request
 		uni.request({
-			url: baseUrl + options.url,
+			url: apiBaseUrl + options.url,
 			method: options.method || 'GET',
 			data: options.data || {},
 			header: {
 				'Content-Type': 'application/json',
-				'Authorization': token ? `Bearer ${token}` : '', // 携带 Token
+				'Authorization': authToken ? `Bearer ${authToken}` : '', // Inject Bearer Token
 				...options.header
 			},
-			success: (res) => {
-				// 判断 HTTP 状态码
-				if (res.statusCode >= 200 && res.statusCode < 300) {
-					resolve(res.data);
+			success: (response) => {
+				// Handle HTTP Status Codes
+				if (response.statusCode >= 200 && response.statusCode < 300) {
+					resolve(response.data);
 				} else {
-					// 尝试解析错误信息
-					let errorMsg = '请求失败';
-					if (res.data && typeof res.data === 'object' && res.data.message) {
-						errorMsg = res.data.message;
-					} else if (res.statusCode === 404) {
-						errorMsg = '接口不存在 (404)';
-					} else if (res.statusCode === 500) {
-						errorMsg = '服务器内部错误 (500)';
+					// Parse Error Message
+					let errorMessage = '请求失败';
+					if (response.data && typeof response.data === 'object' && response.data.message) {
+						errorMessage = response.data.message;
+					} else if (response.statusCode === 404) {
+						errorMessage = '接口不存在 (404)';
+					} else if (response.statusCode === 500) {
+						errorMessage = '服务器内部错误 (500)';
 					}
 					
-					// 统一处理错误提示
+					// Show Error Toast
 					uni.showToast({
-						title: errorMsg,
+						title: errorMessage,
 						icon: 'none'
 					});
 					
-					// 如果是 401 未授权，跳转回登录页
-					if (res.statusCode === 401) {
+					// Handle 401 Unauthorized (Token Expired/Invalid)
+					if (response.statusCode === 401) {
 						uni.reLaunch({
 							url: '/pages/login/login'
 						});
 					}
 					
-					reject(res.data || { message: errorMsg });
+					reject(response.data || { message: errorMessage });
 				}
 			},
-			fail: (err) => {
+			fail: (error) => {
+				console.error('Request Failed:', error);
+				const failMessage = error.errMsg || '服务器连接失败';
 				uni.showToast({
-					title: '服务器连接失败',
-					icon: 'none'
+					title: '连接失败: ' + failMessage,
+					icon: 'none',
+					duration: 3000
 				});
-				reject(err);
+				reject(error);
 			}
 		});
 	});

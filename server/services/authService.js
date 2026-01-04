@@ -4,7 +4,26 @@ const jwt = require('jsonwebtoken');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'agri_trace_secret_key_2025';
 
+// Account Status Constants
+const ACCOUNT_STATUS = {
+  PENDING: 0, // 待审核
+  ACTIVE: 1,  // 正常
+  DISABLED: 2 // 禁用
+};
+
+// User Roles Constants
+const USER_ROLES = {
+  ADMIN: 'admin',
+  FARMER: 'farmer',
+  ENTERPRISE: 'enterprise',
+  CONSUMER: 'consumer'
+};
+
 class AuthService {
+  /**
+   * Register a new user
+   * @param {Object} userData - { username, password, role, phone }
+   */
   async register({ username, password, role, phone }) {
     const existingUser = await User.findOne({ where: { username } });
     if (existingUser) {
@@ -14,30 +33,35 @@ class AuthService {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Determine status based on role
-    let status = 1; // Default active
-    if (role === 'farmer' || role === 'enterprise') {
-      status = 0; // Pending approval
-    } else if (role === 'admin') {
+    // Determine account status based on role
+    let accountStatus = ACCOUNT_STATUS.ACTIVE; // Default to active
+    
+    if (role === USER_ROLES.FARMER || role === USER_ROLES.ENTERPRISE) {
+      accountStatus = ACCOUNT_STATUS.PENDING; // Requires approval
+    } else if (role === USER_ROLES.ADMIN) {
        throw new Error('管理员账号无法通过注册创建');
     }
 
-    const user = await User.create({
+    const newUser = await User.create({
       username,
       password: hashedPassword,
-      role: role || 'consumer',
+      role: role || USER_ROLES.CONSUMER,
       phone,
-      status
+      status: accountStatus
     });
 
     return {
-      id: user.id,
-      username: user.username,
-      role: user.role,
-      status: user.status
+      id: newUser.id,
+      username: newUser.username,
+      role: newUser.role,
+      status: newUser.status
     };
   }
 
+  /**
+   * User Login
+   * @param {Object} credentials - { username, password }
+   */
   async login({ username, password }) {
     const user = await User.findOne({ where: { username } });
     
@@ -45,10 +69,10 @@ class AuthService {
       throw new Error('用户名或密码错误');
     }
 
-    if (user.status === 0) {
+    if (user.status === ACCOUNT_STATUS.PENDING) {
       throw new Error('账号正在审核中，请耐心等待');
     }
-    if (user.status === 2) {
+    if (user.status === ACCOUNT_STATUS.DISABLED) {
       throw new Error('账号已被禁用');
     }
 

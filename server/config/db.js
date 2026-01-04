@@ -25,13 +25,11 @@ const connectDB = async () => {
     
    
     if (process.env.NODE_ENV !== 'production') {
-      // await sequelize.sync({ alter: true });
-      // console.log('数据表同步完成');
-      
-      // 使用 sync() 而不是 sync({ alter: true }) 以避免重复创建索引的问题
-      // 如果需要修改表结构，请手动执行 SQL 或小心开启 alter
+      // Synchronize models with database
+      // Note: Using sync() without { alter: true } is safer for production-like environments
+      // to avoid accidental schema changes or index duplication.
       await sequelize.sync(); 
-      console.log('数据表同步完成');
+      console.log('数据表同步完成 (Data Sync Completed)');
     }
   } catch (error) {
     console.error('Database connection error:', error);

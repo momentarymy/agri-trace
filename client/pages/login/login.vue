@@ -27,7 +27,10 @@
 				<text class="settings-link" @click="showSettings = !showSettings">服务器设置</text>
 				<view v-if="showSettings" class="settings-box">
 					<input class="input-mini" v-model="serverIp" placeholder="输入电脑IP (如 192.168.1.5)" />
-					<button class="btn-mini" size="mini" @click="saveServerIp">保存IP</button>
+					<view style="display: flex; gap: 10px;">
+						<button class="btn-mini" size="mini" @click="saveServerIp">保存IP</button>
+						<button class="btn-mini" size="mini" type="warn" @click="clearServerIp">重置默认</button>
+					</view>
 				</view>
 			</view>
 		</view>
@@ -60,6 +63,12 @@
 					uni.showToast({ title: 'IP已更新，请重新登录', icon: 'none' });
 					this.showSettings = false;
 				}
+			},
+			clearServerIp() {
+				uni.removeStorageSync('server_ip');
+				this.serverIp = '';
+				uni.showToast({ title: '已重置为默认云端地址', icon: 'none' });
+				this.showSettings = false;
 			},
 			async handleLogin() {
 				if (!this.username || !this.password) {
