@@ -125,8 +125,34 @@
 				try {
 					const res = await getTraceInfo(this.id);
 					this.info = res;
+					this.saveToHistory(res);
 				} catch (e) {
 					uni.showToast({ title: '获取信息失败', icon: 'none' });
+				}
+			},
+			saveToHistory(data) {
+				try {
+					let history = uni.getStorageSync('scan_history') || [];
+					// Remove duplicate if exists
+					const index = history.findIndex(item => item.batch_no === data.product.batch_no);
+					if (index > -1) {
+						history.splice(index, 1);
+					}
+					
+					// Add new record
+					history.unshift({
+						batch_no: data.product.batch_no,
+						name: data.product.name,
+						time: new Date().getTime(),
+						location: data.origin.farmland_name
+					});
+					
+					// Limit to 20 records
+					if (history.length > 20) history.length = 20;
+					
+					uni.setStorageSync('scan_history', history);
+				} catch (e) {
+					console.error('Save history failed', e);
 				}
 			},
 			formatDate(dateStr) {

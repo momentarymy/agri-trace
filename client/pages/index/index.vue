@@ -12,7 +12,7 @@
 		</view>
 
 		<!-- 功能菜单区域 -->
-		<view class="menu-section">
+		<view class="menu-section" v-if="currentMenus.length > 0">
 			<view class="section-title">功能导航</view>
 			<view class="grid-container">
 				<view 
@@ -25,6 +25,26 @@
 						<text class="icon">{{ item.icon }}</text>
 					</view>
 					<text class="label">{{ item.label }}</text>
+				</view>
+			</view>
+		</view>
+
+		<!-- 常用功能 -->
+		<view class="settings-section">
+			<view class="settings-list">
+				<view class="settings-item" @click="handleNav('/pages/user/info')">
+					<view class="left">
+						<image src="/static/images/个人信息.png" class="icon-img"></image>
+						<text class="label">个人信息</text>
+					</view>
+					<text class="arrow">›</text>
+				</view>
+				<view class="settings-item" @click="handleNav('/pages/user/about')">
+					<view class="left">
+						<image src="/static/images/About software.png" class="icon-img"></image>
+						<text class="label">关于软件</text>
+					</view>
+					<text class="arrow">›</text>
 				</view>
 			</view>
 		</view>
@@ -90,8 +110,8 @@
 						...this.allMenus.admin
 					];
 				} else {
-					// 消费者
-					menus = [{ label: '扫码溯源', icon: '📷', color: '#007aff', path: '/pages/trace/scan' }];
+					// 消费者 - 首页仅作为个人中心，功能在底部导航栏
+					menus = [];
 				}
 				
 				return menus;
@@ -106,10 +126,25 @@
 				uni.reLaunch({ url: '/pages/login/login' });
 			} else {
 				this.userInfo = user;
+				
+				// 只有消费者显示底部导航栏，其他角色隐藏
+				if (this.userInfo.role === 'consumer') {
+					uni.showTabBar();
+				} else {
+					uni.hideTabBar();
+				}
 			}
 		},
 		methods: {
 			handleNav(path) {
+				// 如果是 TabBar 页面，使用 switchTab
+				if (path === '/pages/trace/scan' || path === '/pages/index/index') {
+					uni.switchTab({
+						url: path
+					});
+					return;
+				}
+
 				uni.navigateTo({
 					url: path,
 					fail: () => {
@@ -260,6 +295,50 @@
 		
 		&:after {
 			border: none;
+		}
+	}
+
+	.settings-section {
+		background: #fff;
+		border-radius: 12px;
+		padding: 0 20px;
+		margin-bottom: 30px;
+		
+		.settings-item {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			padding: 20px 0;
+			border-bottom: 1px solid #f5f5f5;
+			
+			&:last-child {
+				border-bottom: none;
+			}
+			
+			.left {
+				display: flex;
+				align-items: center;
+				
+				.icon-img {
+					width: 24px;
+					height: 24px;
+					margin-right: 10px;
+				}
+				
+				.label {
+					font-size: 16px;
+					color: #333;
+				}
+			}
+			
+			.arrow {
+				color: #ccc;
+				font-size: 16px;
+			}
+			
+			&:active {
+				background-color: #f9f9f9;
+			}
 		}
 	}
 </style>

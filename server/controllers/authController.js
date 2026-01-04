@@ -18,3 +18,9 @@ exports.login = asyncHandler(async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 });
+
+exports.updateProfile = asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+  const updatedUser = await authService.updateProfile(userId, req.body);
+  res.json({ message: '更新成功', user: updatedUser });
+});

@@ -13,10 +13,7 @@
 			
 			<view class="form-item">
 				<text class="label">地理位置</text>
-				<view class="location-box">
-					<input class="input" v-model="form.location" placeholder="点击右侧图标定位" />
-					<text class="icon-loc" @click="getLocation">📍</text>
-				</view>
+				<input class="input" v-model="form.location" placeholder="请输入地块位置" />
 			</view>
 		</view>
 		
@@ -38,17 +35,6 @@
 			}
 		},
 		methods: {
-			getLocation() {
-				uni.getLocation({
-					type: 'wgs84',
-					success: (res) => {
-						this.form.location = `经度:${res.longitude}, 纬度:${res.latitude}`;
-					},
-					fail: () => {
-						uni.showToast({ title: '定位失败，请手动输入', icon: 'none' });
-					}
-				});
-			},
 			async handleSubmit() {
 				if (!this.form.name || !this.form.area) {
 					return uni.showToast({ title: '请填写必填项', icon: 'none' });
@@ -100,18 +86,6 @@
 			padding: 0 15px;
 			font-size: 14px;
 			box-sizing: border-box;
-		}
-		
-		.location-box {
-			position: relative;
-			
-			.icon-loc {
-				position: absolute;
-				right: 15px;
-				top: 10px;
-				font-size: 20px;
-				z-index: 10;
-			}
 		}
 	}
 	

@@ -14,6 +14,7 @@ const uploadRoutes = require('./routes/uploadRoutes');
 const warehouseRoutes = require('./routes/warehouseRoutes');
 const iotRoutes = require('./routes/iotRoutes');
 const qualityRoutes = require('./routes/qualityRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -39,6 +40,7 @@ app.use('/api/upload', uploadRoutes);
 app.use('/api/warehouse', warehouseRoutes);
 app.use('/api/iot', iotRoutes);
 app.use('/api/quality', qualityRoutes);
+app.use('/api/admin', adminRoutes);
 
 // 全局错误处理
 app.use((err, req, res, next) => {

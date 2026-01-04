@@ -15,3 +15,11 @@ export const register = (data) => {
     data
   });
 };
+
+export const updateProfile = (data) => {
+  return request({
+    url: '/auth/update',
+    method: 'PUT',
+    data
+  });
+};

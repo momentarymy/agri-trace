@@ -21,6 +21,15 @@
 			<view class="links">
 				<text @click="handleRegister">注册新账号</text>
 			</view>
+			
+			<!-- 服务器配置区域 -->
+			<view class="server-settings">
+				<text class="settings-link" @click="showSettings = !showSettings">服务器设置</text>
+				<view v-if="showSettings" class="settings-box">
+					<input class="input-mini" v-model="serverIp" placeholder="输入电脑IP (如 192.168.1.5)" />
+					<button class="btn-mini" size="mini" @click="saveServerIp">保存IP</button>
+				</view>
+			</view>
 		</view>
 	</view>
 </template>
@@ -32,10 +41,26 @@
 		data() {
 			return {
 				username: '',
-				password: ''
+				password: '',
+				showSettings: false,
+				serverIp: ''
+			}
+		},
+		onLoad() {
+			// 加载已保存的 IP
+			const savedIp = uni.getStorageSync('server_ip');
+			if (savedIp) {
+				this.serverIp = savedIp;
 			}
 		},
 		methods: {
+			saveServerIp() {
+				if (this.serverIp) {
+					uni.setStorageSync('server_ip', this.serverIp);
+					uni.showToast({ title: 'IP已更新，请重新登录', icon: 'none' });
+					this.showSettings = false;
+				}
+			},
 			async handleLogin() {
 				if (!this.username || !this.password) {
 					return uni.showToast({ title: '请填写完整', icon: 'none' });
@@ -67,40 +92,9 @@
 				}
 			},
 			handleRegister() {
-				if (!this.username || !this.password) {
-					return uni.showToast({ title: '请先输入账号密码', icon: 'none' });
-				}
-
-				const roles = [
-					{ name: '种植农户', value: 'farmer' },
-					{ name: '物流/加工企业', value: 'enterprise' },
-					{ name: '系统管理员', value: 'admin' },
-					{ name: '消费者', value: 'consumer' }
-				];
-
-				uni.showActionSheet({
-					itemList: roles.map(r => r.name),
-					success: (res) => {
-						const selectedRole = roles[res.tapIndex].value;
-						this.doRegister(selectedRole);
-					}
+				uni.navigateTo({
+					url: '/pages/login/register'
 				});
-			},
-			async doRegister(role) {
-				try {
-					await request({
-						url: '/auth/register',
-						method: 'POST',
-						data: {
-							username: this.username,
-							password: this.password,
-							role: role
-						}
-					});
-					uni.showToast({ title: '注册成功，请登录' });
-				} catch (e) {
-					console.error(e);
-				}
 			}
 		}
 	}
@@ -176,5 +170,42 @@
 		text-align: center;
 		font-size: 14px;
 		color: #007aff;
+	}
+	
+	.server-settings {
+		margin-top: 30px;
+		text-align: center;
+		border-top: 1px dashed #eee;
+		padding-top: 20px;
+		
+		.settings-link {
+			font-size: 12px;
+			color: #999;
+			text-decoration: underline;
+		}
+		
+		.settings-box {
+			margin-top: 10px;
+			display: flex;
+			flex-direction: column;
+			gap: 10px;
+			align-items: center;
+			
+			.input-mini {
+				width: 80%;
+				height: 30px;
+				border: 1px solid #ddd;
+				border-radius: 4px;
+				font-size: 12px;
+				padding: 0 5px;
+				text-align: center;
+			}
+			
+			.btn-mini {
+				font-size: 12px;
+				background-color: #f0f0f0;
+				color: #333;
+			}
+		}
 	}
 </style>

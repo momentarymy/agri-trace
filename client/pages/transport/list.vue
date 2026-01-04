@@ -30,7 +30,7 @@
 </template>
 
 <script>
-	import { getTransportList, updateTransportTemp, confirmTransportArrive } from '@/api/transport.js';
+	import { getTransportList, confirmTransportArrive } from '@/api/transport.js';
 	
 	export default {
 		data() {
@@ -57,21 +57,13 @@
 
 				// 暂时不做详情页，直接弹窗模拟操作
 				uni.showActionSheet({
-					itemList: ['模拟上传温度数据', '确认送达'],
+					itemList: ['确认送达'],
 					success: (res) => {
 						if (res.tapIndex === 0) {
-							this.simulateTemp(id);
-						} else {
 							this.confirmArrive(id);
 						}
 					}
 				});
-			},
-			async simulateTemp(id) {
-				try {
-					await updateTransportTemp(id, (Math.random() * 5 + 2).toFixed(1));
-					uni.showToast({ title: '数据已上传' });
-				} catch (e) {}
 			},
 			async confirmArrive(id) {
 				try {

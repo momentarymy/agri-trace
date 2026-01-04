@@ -25,6 +25,11 @@ const User = sequelize.define('User', {
   },
   avatar: {
     type: DataTypes.STRING
+  },
+  status: {
+    type: DataTypes.TINYINT,
+    defaultValue: 1, // 0:待审核, 1:正常, 2:禁用
+    comment: '0:Pending, 1:Active, 2:Disabled'
   }
 }, {
   tableName: 'sys_users',

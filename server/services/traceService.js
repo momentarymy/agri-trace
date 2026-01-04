@@ -1,3 +1,4 @@
+const { Op } = require('sequelize');
 const Batch = require('../models/Batch');
 const Farmland = require('../models/Farmland');
 const Operation = require('../models/Operation');
@@ -7,10 +8,20 @@ const User = require('../models/User');
 const QualityCheck = require('../models/QualityCheck');
 
 class TraceService {
-  async getTraceInfo(batchId) {
+  async getTraceInfo(queryId) {
     // 1. Get Batch Info + Farmland
+    const whereClause = {
+        [Op.or]: [
+            { batch_no: queryId }
+        ]
+    };
+    
+    if (/^\d+$/.test(queryId)) {
+        whereClause[Op.or].push({ id: queryId });
+    }
+
     const batch = await Batch.findOne({
-      where: { id: batchId },
+      where: whereClause,
       include: [{
         model: Farmland,
         as: 'farmland'
@@ -20,6 +31,8 @@ class TraceService {
     if (!batch) {
       throw new Error('Batch not found');
     }
+
+    const batchId = batch.id;
 
     // 2. Get Operations
     const operations = await Operation.findAll({
