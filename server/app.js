@@ -76,3 +76,5 @@ const startServer = async () => {
 };
 
 startServer();
+
+// 用途：后端 Express 应用的入口文件，配置中间件和路由。

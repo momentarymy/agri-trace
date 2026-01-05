@@ -20,3 +20,4 @@ export function createApp() {
   }
 }
 // #endif
+// 用途：UniApp 应用的入口文件，初始化 Vue 实例。

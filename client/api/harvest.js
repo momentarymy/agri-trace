@@ -15,3 +15,5 @@ export const getHarvestList = (params) => {
     data: params
   });
 };
+
+// 用途：采摘记录相关的 API 接口。

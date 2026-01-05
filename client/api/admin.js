@@ -15,3 +15,5 @@ export const updateUserStatus = (id, status) => {
     data: { status }
   });
 };
+
+// 用途：管理员相关操作的 API 接口。

@@ -8,3 +8,5 @@ export const getTraceInfo = (id) => {
     method: 'GET'
   });
 };
+
+// 用途：产品溯源查询相关的 API 接口。

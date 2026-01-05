@@ -21,3 +21,5 @@ export const getAllQualityChecks = () => {
         method: 'GET'
     });
 };
+
+// 用途：质量检测记录相关的 API 接口。

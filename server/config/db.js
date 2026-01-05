@@ -38,3 +38,5 @@ const connectDB = async () => {
 };
 
 module.exports = { sequelize, connectDB };
+
+// 用途：数据库连接配置与初始化（Sequelize）。

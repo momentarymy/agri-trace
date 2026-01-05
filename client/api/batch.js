@@ -22,3 +22,5 @@ export const getBatchDetail = (id) => {
     method: 'GET'
   });
 };
+
+// 用途：生产批次管理相关的 API 接口。

@@ -21,3 +21,5 @@ export const operateStock = (data) => {
     data
   });
 };
+
+// 用途：仓储库存管理相关的 API 接口。

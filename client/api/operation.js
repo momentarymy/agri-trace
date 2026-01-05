@@ -21,3 +21,5 @@ export const getAllOperations = () => {
     method: 'GET'
   });
 };
+
+// 用途：农事操作记录相关的 API 接口。

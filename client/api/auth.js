@@ -23,3 +23,5 @@ export const updateProfile = (data) => {
     data
   });
 };
+
+// 用途：用户认证（登录、注册）相关的 API 接口。

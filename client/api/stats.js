@@ -6,3 +6,5 @@ export const getDashboardStats = () => {
     method: 'GET'
   });
 };
+
+// 用途：数据统计与仪表盘相关的 API 接口。

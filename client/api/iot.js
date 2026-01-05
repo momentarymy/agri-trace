@@ -13,3 +13,5 @@ export const getHistoryData = () => {
     method: 'GET'
   });
 };
+
+// 用途：物联网传感器数据相关的 API 接口。

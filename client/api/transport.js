@@ -29,3 +29,5 @@ export const confirmTransportArrive = (id) => {
     method: 'POST'
   });
 };
+
+// 用途：物流运输管理相关的 API 接口。

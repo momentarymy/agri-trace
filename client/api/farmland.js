@@ -22,3 +22,5 @@ export const deleteFarmland = (id) => {
     method: 'DELETE'
   });
 };
+
+// 用途：地块管理相关的 API 接口。
